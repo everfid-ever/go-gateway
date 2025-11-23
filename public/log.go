@@ -5,8 +5,8 @@ import (
 	"go-gateway/common/lib"
 )
 
-// GenGinTraceContext 从 gin.Context 中获取 *lib.TraceContext。
-func GenGinTraceContext(c *gin.Context) *lib.TraceContext {
+// GetGinTraceContext 从 gin.Context 中获取 *lib.TraceContext。
+func GetGinTraceContext(c *gin.Context) *lib.TraceContext {
 	// 防御：避免 c 为空指针
 	if c == nil {
 		return lib.NewTrace()
@@ -24,6 +24,6 @@ func GenGinTraceContext(c *gin.Context) *lib.TraceContext {
 
 // ComLogNotice 记录业务日志，封装了从 gin.Context 获取 TraceContext 的逻辑。
 func ComLogNotice(c *gin.Context, dltag string, m map[string]interface{}) {
-	traceContext := GenGinTraceContext(c)
+	traceContext := GetGinTraceContext(c)
 	lib.Log.TagInfo(traceContext, dltag, m)
 }
