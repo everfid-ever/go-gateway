@@ -6,7 +6,6 @@ toolchain go1.24.7
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/e421083458/go_gateway v0.0.0-20230623173026-d2d21f7c93e8
 	github.com/e421083458/gorm v1.0.1
 	github.com/garyburd/redigo v1.6.4
 	github.com/gin-gonic/contrib v0.0.0-20250521004450-2b1292699c15
