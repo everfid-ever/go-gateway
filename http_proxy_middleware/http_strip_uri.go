@@ -11,6 +11,7 @@ import (
 
 func HTTPStripUriMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// 获取服务信息
 		serverInterface, ok := c.Get("service")
 		if !ok {
 			middleware.ResponseError(c, 2001, errors.New("service not found"))
@@ -19,8 +20,10 @@ func HTTPStripUriMiddleware() gin.HandlerFunc {
 		}
 		serviceDetail := serverInterface.(*dao.ServiceDetail)
 
+		// 判断是否需要剥离URI
 		if serviceDetail.HTTPRule.RuleType == public.HTTPRuleTypePrefixURL && serviceDetail.HTTPRule.NeedStripUri == 1 {
 			//fmt.Println("c.Request.URL.Path",c.Request.URL.Path)
+			// 剥离URI前缀
 			c.Request.URL.Path = strings.Replace(c.Request.URL.Path, serviceDetail.HTTPRule.Rule, "", 1)
 			//fmt.Println("c.Request.URL.Path",c.Request.URL.Path)
 		}
