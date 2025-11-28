@@ -2,7 +2,9 @@ package http_proxy_router
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-gateway/controller"
 	"go-gateway/http_proxy_middleware"
+	"go-gateway/middleware"
 )
 
 func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
@@ -16,10 +18,17 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		})
 	})
 
+	oauth := router.Group("/oauth")
+	oauth.Use(middleware.TranslationMiddleware())
+	{
+		controller.OAuthRegister(oauth)
+	}
+
 	router.Use(
 		http_proxy_middleware.HTTPAccessModeMiddleware(),
 		http_proxy_middleware.HTTPFlowCountMiddleware(),
 		http_proxy_middleware.HTTPFlowLimitMiddleware(),
+		http_proxy_middleware.HTTPJwtAuthTokenMiddleware(),
 		http_proxy_middleware.HTTPJwtFlowCountMiddleware(),
 		http_proxy_middleware.HTTPJwtFlowLimitMiddleware(),
 		http_proxy_middleware.HTTPWhiteListMiddleware(),
@@ -28,5 +37,6 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		http_proxy_middleware.HTTPStripUriMiddleware(),
 		http_proxy_middleware.HTTPUrlRewriteMiddleware(),
 		http_proxy_middleware.HTTPReverseProxyMiddleware())
+	
 	return router
 }
