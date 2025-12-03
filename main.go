@@ -3,8 +3,11 @@ package main
 import (
 	"flag"
 	"go-gateway/common/lib"
+	"go-gateway/dao"
+	"go-gateway/grpc_proxy_router"
 	"go-gateway/http_proxy_router"
 	"go-gateway/router"
+	"go-gateway/tcp_proxy_router"
 	"os"
 	"os/signal"
 	"syscall"
@@ -41,6 +44,8 @@ func main() {
 	} else {
 		lib.InitModule(*config)
 		defer lib.Destroy()
+		dao.ServiceManagerHandler.LoadOnce()
+		dao.AppManagerHandler.LoadOnce()
 
 		go func() {
 			http_proxy_router.HttpServerRun()
@@ -48,11 +53,19 @@ func main() {
 		go func() {
 			http_proxy_router.HttpsServerRun()
 		}()
+		go func() {
+			tcp_proxy_router.TcpServerRun()
+		}()
+		go func() {
+			grpc_proxy_router.GrpcServerRun()
+		}()
 
 		quit := make(chan os.Signal)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		<-quit
 
+		tcp_proxy_router.TcpServerStop()
+		grpc_proxy_router.GrpcServerStop()
 		http_proxy_router.HttpServerStop()
 		http_proxy_router.HttpsServerStop()
 	}
